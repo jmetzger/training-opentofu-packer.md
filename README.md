@@ -1,4 +1,4 @@
-# OpenTofu (inkl. Packer) & Kubernetes
+# Training Packer/OpenTofu/Ansible -> Kubernetes
 
 ## Agenda
 
@@ -8,6 +8,6 @@
      * [Packer/Opentofu/Ansible - Workflow Überblick](automation/packer-opentofu-ansible-kubeadm.md)
   1. Packer
      * [Packer installieren](packer/installation.md)
-     * [Packer bash-completion aktivieren]()    
+     * [Packer bash-completion aktivieren](packer/bash-completion.md)    
 
     
