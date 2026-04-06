@@ -3,7 +3,7 @@
 ## Agenda
 
   1. Vorbereitung proxmox
-     * [API - Key einrichten](proxmox/api-key-einrichten.md)
+     * [API - Token einrichten](proxmox/api-key-einrichten.md)
        
 
     
