@@ -40,6 +40,7 @@ sudo apt-get update && sudo apt-get install -y packer
 ## Schritt 1: Verzeichnisstruktur anlegen
 
 ```bash
+cd
 mkdir -p packer/template-ubuntu/{http,scripts}
 cd packer/template-ubuntu
 ```
