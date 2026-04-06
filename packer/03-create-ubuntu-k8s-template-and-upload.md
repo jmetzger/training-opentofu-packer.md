@@ -147,7 +147,7 @@ source "proxmox-iso" "ubuntu-k8s" {
   scsi_controller = "virtio-scsi-single"
 
   efi_config {
-    efi_storage_pool  = "local-lvm"
+    efi_storage_pool  = "local"
     efi_type          = "4m"
     pre_enrolled_keys = false
   }
@@ -169,7 +169,7 @@ source "proxmox-iso" "ubuntu-k8s" {
   }
 
   cloud_init              = true
-  cloud_init_storage_pool = "local-lvm"
+  cloud_init_storage_pool = "local"
 
   boot_command = [
     "<wait5><wait5>",
