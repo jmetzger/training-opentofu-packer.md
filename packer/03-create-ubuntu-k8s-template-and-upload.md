@@ -134,7 +134,9 @@ source "proxmox-iso" "ubuntu-k8s" {
   vm_name              = "ubuntu-k8s-tln$TLN_NR"
   template_description = "Ubuntu 24.04 mit kubeadm - TLN $TLN_NR"
 
-  iso_file = var.iso_file
+  boot_iso {
+    iso_file = var.iso_file
+  }
 
   os           = "l26"
   cpu_type     = "host"
@@ -390,7 +392,8 @@ chmod +x scripts/*.sh
 ## Schritt 3: Variablen anpassen
 
 ```bash
-cat > variables.pkrvars.hcl << 'ENDOFFILE'
+# Dateien, die auf ".auto.pkrvars.hcl" enden werden automatisch geladen 
+cat > variables.auto.pkrvars.hcl << 'ENDOFFILE'
 proxmox_url          = "https://176.9.38.183:8006/api2/json"
 proxmox_token_id     = "root@pam!automation"
 proxmox_token_secret = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
@@ -402,7 +405,7 @@ ENDOFFILE
 **Jetzt die Datei editieren** – Proxmox-Zugangsdaten eintragen:
 
 ```bash
-nano variables.pkrvars.hcl
+nano variables.auto.pkrvars.hcl
 ```
 
 > **Hinweis Token-ID:** Das Format ist `user@realm!tokenname`, z.B. `root@pam!packer`.
@@ -443,7 +446,8 @@ Das lädt das Proxmox-Plugin herunter.
 ## Schritt 5: Validieren
 
 ```bash
-packer validate -var-file=variables.pkrvars.hcl ubuntu-k8s.pkr.hcl
+# validiert alle pkr.hcl Dateien 
+packer validate .
 ```
 
 ---
