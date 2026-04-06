@@ -455,7 +455,7 @@ packer validate .
 ## Schritt 6: Template bauen
 
 ```bash
-packer build -var-file=variables.pkrvars.hcl ubuntu-k8s.pkr.hcl
+packer build .
 ```
 
 > **Dauer:** ca. 10–15 Minuten. Packer startet die VM, führt autoinstall durch, provisioniert per SSH und konvertiert am Ende zu einem Template.
