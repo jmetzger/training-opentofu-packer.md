@@ -4,4 +4,8 @@
 
 <img width="792" height="314" alt="image" src="https://github.com/user-attachments/assets/b9b93432-cfe2-4b99-b721-f532527a4bc3" />
 
-* Privilege Seperation ausschalten 
+* Privilege Seperation ausschalten
+* Das token heisst dann: root@pam!automation
+* Add
+
+NOTE!> Achtung: token und secret-id rauskopieren, wird nur 1x angezeigt 
