@@ -524,7 +524,7 @@ In der Proxmox-Oberfläche solltet ihr jetzt ein Template sehen:
 
 ```bash
 # Klonen
-qm clone 900$TLN_NR 20${TLN_NR}1 --name k8s-cp1 --full
+qm clone 900$TLN_NR 20${TLN_NR} --name k8s-cp1 --full
 
 # IP per Cloud-Init überschreiben
 qm set 20${TLN_NR}1 --ipconfig0 ip=10.10.10.20/24,gw=10.10.10.1
