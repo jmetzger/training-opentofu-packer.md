@@ -5,3 +5,8 @@ curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /usr/s
 echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
 sudo apt update && sudo apt install packer
 ```
+
+```
+# zusätzlich wird ein Tool zum Bauen des images benötigt
+sudo apt install -y xorriso
+```
