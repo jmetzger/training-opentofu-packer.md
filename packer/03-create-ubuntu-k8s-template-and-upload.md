@@ -159,7 +159,7 @@ source "proxmox-iso" "ubuntu-k8s" {
     # storage_pool = "local-lvm"
     # in unserer Installation gibt es aber kein lvm
     storage_pool = "local"
-    format       = "raw"
+    format       = "qcow2"
   }
 
   network_adapters {
@@ -189,8 +189,6 @@ source "proxmox-iso" "ubuntu-k8s" {
   ]
 
   boot_wait = "5s"
-
-  http_directory = "http"
 
   ssh_username = var.ssh_username
   ssh_password = var.ssh_password
@@ -248,7 +246,7 @@ autoinstall:
     - gnupg
     - software-properties-common
   late-commands:
-    - "systemctl enable qemu-guest-agent --root=/target"
+    - "curtin in-target -- systemctl enable qemu-guest-agent"
 ENDOFFILE
 ```
 
