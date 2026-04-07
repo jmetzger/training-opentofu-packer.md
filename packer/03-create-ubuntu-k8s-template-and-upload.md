@@ -37,10 +37,19 @@ sudo apt-get update && sudo apt-get install -y packer
 
 ---
 
-## Schritt 1: Teilnehmernummer setzen und Verzeichnisstruktur anlegen
+## Schritt 1: Teilnehmernummer setzen, Zugangsdaten (für Packer und cloud-init) und Verzeichnisstruktur anlegen
 
 ```bash
 export TLN_NR=1   # <-- EURE Nummer hier!
+```
+
+```
+export TEMPLATE_USER=trainee
+export TEMPLATE_IP="10.10.10.1<tln-nr>" # Bitte teilnehmer-nr ersetzen
+export TEMPLATE_PASSWD="DeinSuperPass" # hier dein eigenes 
+export TEMPLATE_PASSWD_HASH=$(echo $TEMPLATE_PASSWD | openssl passwd -6 -stdin) # Bitte eigenes Verwenden
+```
+
 ```
 
 ```bash
@@ -220,10 +229,6 @@ ENDOFFILE
 
 ### 2.2 – Autoinstall: user-data und meta-data
 
-```bash
-export TEMPLATE_IP="10.10.10.1<tln-nr>" # Bitte teilnehmer-nr ersetzen
-export TEMPLATE_PASSWD=$(echo 'DeinSuperGeheimesPasswort' | openssl passwd -6 -stdin) # Bitte eigenes Verwenden
-```
 
 
 ```bash
@@ -236,8 +241,8 @@ autoinstall:
     layout: de
   identity:
     hostname: ubuntu-k8s
-    username: trainee
-    password: "$TEMPLATE_PASSWD"
+    username: $TEMPLATE_USER
+    password: "$TEMPLATE_PASSWD_HASH"
     # Passwort: training
   ssh:
     install-server: true
@@ -429,6 +434,12 @@ proxmox_token_id     = "root@pam!automation"
 proxmox_token_secret = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
 proxmox_node         = "pve"
 iso_file             = "local:iso/ubuntu-24.04.4-live-server-amd64.iso"
+
+# User / Password to connect to ssh by packer 
+ssh_username         = $TEMPLATE_USER
+ssh_password         = $TEMPLATE_PASSWD
+
+
 ENDOFFILE
 ```
 
@@ -485,7 +496,10 @@ packer validate .
 ## Schritt 6: Template bauen
 
 ```bash
-packer build .
+# Variante zum Debuggen
+PACKER_LOG=1 packer build . 2>&1 | tee packer-build.log
+# Variante ohne Debuggen
+packer build . 
 ```
 
 > **Dauer:** ca. 10–15 Minuten. Packer startet die VM, führt autoinstall durch, provisioniert per SSH und konvertiert am Ende zu einem Template.
@@ -503,8 +517,8 @@ In der Proxmox-Oberfläche solltet ihr jetzt ein Template sehen:
 
 ```bash
 # Auf dem Proxmox-Host:
-qm clone 9001 201 --name k8s-test --full
-qm start 201
+qm clone 900<tln-nr> 20<tln-nr> --name k8s-test --full
+qm start 20<tln-nr>
 
 # Per SSH verbinden und prüfen:
 kubeadm version
