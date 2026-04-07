@@ -222,6 +222,7 @@ ENDOFFILE
 
 ```bash
 export TEMPLATE_IP="10.10.10.1<tln-nr>" # Bitte teilnehmer-nr ersetzen
+export TEMPLATE_PASSWD=$(echo 'DeinSuperGeheimesPasswort' | openssl passwd -6 -stdin) # Bitte eigenes Verwenden
 ```
 
 
@@ -236,7 +237,7 @@ autoinstall:
   identity:
     hostname: ubuntu-k8s
     username: trainee
-    password: "\$6\$rounds=4096\$randomsalt\$VZzF0L7Kj5GJxKxKqVxDmC.MjRqQ5bN5YZKf0MhJxWlKjnDBa8dqm1CB/LJhD6sR9.d5XlE2qWhYv6Fx9aXH0"
+    password: "$TEMPLATE_PASSWORD"
     # Passwort: training
   ssh:
     install-server: true
