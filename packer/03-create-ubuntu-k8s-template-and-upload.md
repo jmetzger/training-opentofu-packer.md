@@ -55,8 +55,6 @@ export TEMPLATE_PASSWD="DeinSuperPass" # hier dein eigenes
 export TEMPLATE_PASSWD_HASH=$(echo $TEMPLATE_PASSWD | openssl passwd -6 -stdin) # Bitte eigenes Verwenden
 ```
 
-```
-
 ```bash
 cd
 mkdir -p packer/template-ubuntu/{http,scripts}
