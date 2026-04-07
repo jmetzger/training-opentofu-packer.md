@@ -50,7 +50,7 @@ export TLN_NR=1   # <-- EURE Nummer hier!
 
 ```
 export TEMPLATE_USER=trainee
-export TEMPLATE_IP="10.10.10.1<tln-nr>" # Bitte teilnehmer-nr ersetzen
+export TEMPLATE_IP="10.10.10.1$TLN_NR" # Bitte teilnehmer-nr ersetzen
 export TEMPLATE_PASSWD="DeinSuperPass" # hier dein eigenes 
 export TEMPLATE_PASSWD_HASH=$(echo $TEMPLATE_PASSWD | openssl passwd -6 -stdin) # Bitte eigenes Verwenden
 ```
