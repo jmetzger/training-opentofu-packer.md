@@ -221,6 +221,11 @@ ENDOFFILE
 ### 2.2 – Autoinstall: user-data und meta-data
 
 ```bash
+export TEMPLATE_IP="10.10.10.1<tln-nr>" # Bitte teilnehmer-nr ersetzen
+```
+
+
+```bash
 cat > http/user-data << 'ENDOFFILE'
 #cloud-config
 autoinstall:
@@ -236,6 +241,17 @@ autoinstall:
   ssh:
     install-server: true
     allow-pw: true
+  network:
+    network:
+      version: 2
+      ethernets:
+        ens18:
+          addresses: [$TEMPLATE_IP/24]
+          gateway4: 10.10.10.1
+          nameservers:
+            addresses: [8.8.8.8, 8.8.4.4]
+
+
   storage:
     layout:
       name: lvm
