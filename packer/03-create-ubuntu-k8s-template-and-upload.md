@@ -519,10 +519,17 @@ In der Proxmox-Oberfläche solltet ihr jetzt ein Template sehen:
 ### Schnelltest: VM aus Template klonen
 
 ```bash
-# Auf dem Proxmox-Host:
-qm clone 900<tln-nr> 20<tln-nr> --name k8s-test --full
-qm start 20<tln-nr>
+# Klonen
+qm clone 900$TLN_NR 20${TLN_NR}1 --name k8s-cp1 --full
 
+# IP per Cloud-Init überschreiben
+qm set 20${TLN_NR}1 --ipconfig0 ip=10.10.10.20/24,gw=10.10.10.1
+
+# Starten
+qm start 20${TLN_NR}1
+```
+
+```
 # Per SSH verbinden und prüfen:
 kubeadm version
 kubelet --version
