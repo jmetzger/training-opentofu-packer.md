@@ -173,10 +173,17 @@ source "proxmox-iso" "ubuntu-k8s" {
   cloud_init              = true
   cloud_init_storage_pool = "local"
 
+ # Statt http_directory:
+  additional_iso_files {
+    cd_files = ["./http/user-data", "./http/meta-data"]
+    cd_label = "cidata"
+    iso_storage_pool = "local"
+  }
+
   boot_command = [
     "<wait5><wait5>",
     "c<wait3>",
-    "linux /casper/vmlinuz autoinstall ds='nocloud;s=http://{{ .HTTPIP }}:{{ .HTTPPort }}/' ---<enter>",
+    "linux /casper/vmlinuz autoinstall ---<enter>",
     "initrd /casper/initrd<enter>",
     "boot<enter>"
   ]
