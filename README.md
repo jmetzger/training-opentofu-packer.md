@@ -3,6 +3,7 @@
 ## Agenda
 
   1. Vorbereitung proxmox
+     * [vmbr1 für interne IP's aufsetzen in proxmox (nur Hetzner !)](proxmox/01-vmbr1-einrichten.md)
      * [API - Token einrichten](proxmox/api-key-einrichten.md)
      * [Ubuntu 24.04 - image in proxmox hochladen](proxmox/ubuntu-24-04-iso-hochladen.md)
   1. Überblick Installation Kubernetes (Automation) 
