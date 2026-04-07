@@ -439,8 +439,8 @@ proxmox_node         = "pve"
 iso_file             = "local:iso/ubuntu-24.04.4-live-server-amd64.iso"
 
 # User / Password to connect to ssh by packer 
-ssh_username         = $TEMPLATE_USER
-ssh_password         = $TEMPLATE_PASSWD
+ssh_username         = "$TEMPLATE_USER"
+ssh_password         = "$TEMPLATE_PASSWD"
 
 
 ENDOFFILE
