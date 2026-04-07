@@ -226,7 +226,7 @@ export TEMPLATE_IP="10.10.10.1<tln-nr>" # Bitte teilnehmer-nr ersetzen
 
 
 ```bash
-cat > http/user-data << 'ENDOFFILE'
+cat > http/user-data << ENDOFFILE
 #cloud-config
 autoinstall:
   version: 1
@@ -236,7 +236,7 @@ autoinstall:
   identity:
     hostname: ubuntu-k8s
     username: trainee
-    password: "$6$rounds=4096$randomsalt$VZzF0L7Kj5GJxKxKqVxDmC.MjRqQ5bN5YZKf0MhJxWlKjnDBa8dqm1CB/LJhD6sR9.d5XlE2qWhYv6Fx9aXH0"
+    password: "\$6\$rounds=4096\$randomsalt\$VZzF0L7Kj5GJxKxKqVxDmC.MjRqQ5bN5YZKf0MhJxWlKjnDBa8dqm1CB/LJhD6sR9.d5XlE2qWhYv6Fx9aXH0"
     # Passwort: training
   ssh:
     install-server: true
@@ -250,8 +250,6 @@ autoinstall:
           gateway4: 10.10.10.1
           nameservers:
             addresses: [8.8.8.8, 8.8.4.4]
-
-
   storage:
     layout:
       name: lvm
