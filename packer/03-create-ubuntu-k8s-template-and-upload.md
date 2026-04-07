@@ -502,7 +502,7 @@ packer validate .
 # Variante zum Debuggen
 PACKER_LOG=1 packer build . 2>&1 | tee packer-build.log
 # Variante ohne Debuggen
-packer build . 
+# packer build . 
 ```
 
 > **Dauer:** ca. 10–15 Minuten. Packer startet die VM, führt autoinstall durch, provisioniert per SSH und konvertiert am Ende zu einem Template.
