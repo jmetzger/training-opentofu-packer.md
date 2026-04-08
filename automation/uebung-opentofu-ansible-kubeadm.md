@@ -17,9 +17,8 @@ Du erstellst mit OpenTofu einen Kubernetes-Cluster (1 Control Plane, N Worker No
 | Variable | Beispielwert | Beschreibung |
 |----------|-------------|--------------|
 | `TLN_NR` | `1` | Teilnehmernummer (1, 2, 3, 4, 5, ...) |
-| `PROXMOX_URL` | `https://176.9.38.183:8006` | Proxmox API-URL |
-| `PROXMOX_USER` | `root@pam` | Proxmox Benutzer |
-| `PROXMOX_PASS` | `geheim` | Proxmox Passwort |
+| `PROXMOX_TOKEN_ID` | `root@pam!automation` | Proxmox API Token ID |
+| `PROXMOX_TOKEN_SECRET` | `xxxxxxxx-xxxx-...` | Proxmox API Token Secret |
 
 ---
 
@@ -29,9 +28,8 @@ Passe die Werte an deine Umgebung an:
 
 ```bash
 export TLN_NR="1"
-export PROXMOX_URL="https://176.9.38.183:8006"
-export PROXMOX_USER="root@pam"
-export PROXMOX_PASS="geheim"
+export PROXMOX_TOKEN_ID="root@pam!automation"
+export PROXMOX_TOKEN_SECRET="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
 ```
 
 ---
@@ -61,10 +59,9 @@ terraform {
 }
 
 provider "proxmox" {
-  endpoint = var.proxmox_url
-  username = var.proxmox_user
-  password = var.proxmox_password
-  insecure = true
+  endpoint  = var.proxmox_url
+  api_token = "${var.proxmox_token_id}=${var.proxmox_token_secret}"
+  insecure  = true
 }
 
 # --- Control Plane: VM-ID = 3<TLN_NR>0 ---
@@ -195,14 +192,15 @@ variable "proxmox_url" {
   type = string
 }
 
-variable "proxmox_user" {
-  type    = string
-  default = "root@pam"
+variable "proxmox_token_id" {
+  description = "Proxmox API Token ID (z.B. root@pam!automation)"
+  type        = string
 }
 
-variable "proxmox_password" {
-  type      = string
-  sensitive = true
+variable "proxmox_token_secret" {
+  description = "Proxmox API Token Secret"
+  type        = string
+  sensitive   = true
 }
 
 variable "proxmox_node" {
@@ -345,9 +343,9 @@ EOF
 ```bash
 cat > terraform.tfvars <<EOF
 tln_nr           = "${TLN_NR}"
-proxmox_url      = "${PROXMOX_URL}"
-proxmox_user     = "${PROXMOX_USER}"
-proxmox_password = "${PROXMOX_PASS}"
+proxmox_url      = "https://176.9.38.183:8006"
+proxmox_token_id     = "${PROXMOX_TOKEN_ID}"
+proxmox_token_secret = "${PROXMOX_TOKEN_SECRET}"
 proxmox_node     = "pve"
 template_vm_id   = 9000
 
@@ -363,7 +361,7 @@ ssh_public_key_path = "~/.ssh/id_ed25519.pub"
 EOF
 ```
 
-**Hinweis:** `terraform.tfvars` enthält Passwörter — in `.gitignore` aufnehmen!
+**Hinweis:** `terraform.tfvars` enthält das API-Token — in `.gitignore` aufnehmen!
 
 ---
 
@@ -396,14 +394,14 @@ cat > ansible/site.yml <<'EOF'
 
     - name: Calico Operator installieren
       become: false
-      command: kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.29.3/manifests/tigera-operator.yaml
+      command: kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.31.4/manifests/tigera-operator.yaml
       register: calico_operator
       changed_when: calico_operator.rc == 0
       failed_when: calico_operator.rc != 0 and 'AlreadyExists' not in calico_operator.stderr
 
     - name: Calico Custom Resources installieren
       become: false
-      command: kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.29.3/manifests/custom-resources.yaml
+      command: kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.31.4/manifests/custom-resources.yaml
       register: calico_cr
       changed_when: calico_cr.rc == 0
       failed_when: calico_cr.rc != 0 and 'AlreadyExists' not in calico_cr.stderr
@@ -419,6 +417,41 @@ cat > ansible/site.yml <<'EOF'
     - name: Join-Command als Fact setzen
       set_fact:
         k8s_join_command: "{{ join_command.stdout }}"
+
+# --- kubeconfig lokal kopieren ---
+- name: kubeconfig lokal bereitstellen
+  hosts: controlplane
+  become: true
+  tasks:
+
+    - name: kubeconfig vom Control Plane holen
+      fetch:
+        src: /etc/kubernetes/admin.conf
+        dest: /tmp/kubeconfig
+        flat: true
+
+    - name: Server-URL in kubeconfig anpassen
+      delegate_to: localhost
+      become: false
+      replace:
+        path: /tmp/kubeconfig
+        regexp: 'server: https://.*:6443'
+        replace: "server: https://{{ ansible_host }}:6443"
+
+    - name: kubeconfig nach ~/.kube/config kopieren
+      delegate_to: localhost
+      become: false
+      copy:
+        src: /tmp/kubeconfig
+        dest: "{{ lookup('env', 'HOME') }}/.kube/config"
+        mode: '0600'
+
+    - name: Temp-Datei aufräumen
+      delegate_to: localhost
+      become: false
+      file:
+        path: /tmp/kubeconfig
+        state: absent
 
 # --- Alle Worker joinen ---
 - name: Worker dem Cluster hinzufügen
@@ -436,7 +469,7 @@ EOF
 **Hinweis zu Calico:**
 - `--pod-network-cidr=192.168.0.0/16` ist der Calico-Default
 - Die `custom-resources.yaml` von Calico verwendet genau dieses CIDR
-- Calico-Version (hier v3.29.3) ggf. an aktuelle Version anpassen
+- Calico-Version (hier v3.31.4) ggf. an aktuelle Version anpassen
 
 ---
 
@@ -490,8 +523,10 @@ ansible-playbook -i inventory/hosts.ini ansible/site.yml
 
 ## Schritt 11: Cluster prüfen
 
+Die kubeconfig wurde automatisch nach `~/.kube/config` kopiert. Du kannst direkt lokal arbeiten:
+
 ```bash
-ssh trainee@${CP_IP} kubectl get nodes
+kubectl get nodes
 ```
 
 Erwartete Ausgabe:
@@ -505,7 +540,7 @@ k8s-tln1-worker1    Ready    <none>          3m    v1.31.x
 Calico-Status prüfen:
 
 ```bash
-ssh trainee@${CP_IP} kubectl get pods -n calico-system
+kubectl get pods -n calico-system
 ```
 
 ---
@@ -543,7 +578,7 @@ ansible-playbook -i "$INVENTORY" ansible/site.yml
 
 echo ""
 echo "=== Fertig! Cluster prüfen: ==="
-echo "ssh trainee@$(tofu output -raw controlplane_ip) kubectl get nodes"
+echo "kubectl get nodes"
 SCRIPT
 
 chmod +x deploy.sh
