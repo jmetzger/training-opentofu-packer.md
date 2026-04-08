@@ -417,6 +417,10 @@ cat > ansible/site.yml <<'EOF'
       changed_when: calico_operator.rc == 0
       failed_when: calico_operator.rc != 0 and 'AlreadyExists' not in calico_operator.stderr
 
+    - name: Warten bis Calico CRDs registriert sind
+      become: false
+      command: kubectl wait --for=condition=Established crd/installations.operator.tigera.io --timeout=120s
+
     - name: Calico Custom Resources installieren
       become: false
       command: kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.31.4/manifests/custom-resources.yaml
