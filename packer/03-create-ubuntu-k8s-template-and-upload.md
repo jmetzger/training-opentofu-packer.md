@@ -540,7 +540,13 @@ qm start 20${TLN_NR}
 ```
 
 ```
-# Per SSH verbinden und prüfen:
+# Per SSH verbinden
+ssh trainee@10.10.10.2${TLN_NR}
+```
+
+
+```
+# prüfen:
 kubeadm version
 kubelet --version
 kubectl version --client
