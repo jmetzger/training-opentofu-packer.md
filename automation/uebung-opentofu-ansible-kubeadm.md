@@ -357,6 +357,7 @@ proxmox_url      = "https://176.9.38.183:8006"
 proxmox_token_id     = "${PROXMOX_TOKEN_ID}"
 proxmox_token_secret = "${PROXMOX_TOKEN_SECRET}"
 proxmox_node     = "pve"
+datastore        = "local"
 template_vm_id   = 900${TLN_NR}
 
 worker_count    = 1
