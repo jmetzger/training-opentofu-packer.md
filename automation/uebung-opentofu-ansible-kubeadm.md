@@ -6,7 +6,7 @@ Du erstellst mit OpenTofu einen Kubernetes-Cluster (1 Control Plane, N Worker No
 
 ## Voraussetzungen
 
-- Proxmox-Server mit fertigem VM-Template (VM-ID z.B. 9000, erstellt mit Packer)
+- Proxmox-Server mit fertigem VM-Template (VM-ID `900<TLN_NR>`, z.B. 9001 für TLN 1, erstellt mit Packer)
   - Im Template bereits vorbereitet: containerd, kubelet, kubeadm, kubectl, Kernel-Module, Sysctl, Swap deaktiviert
 - OpenTofu installiert (`tofu version`)
 - Ansible installiert (`ansible --version`)
@@ -38,11 +38,7 @@ Passe die Werte an deine Umgebung an:
 
 ```bash
 export TLN_NR="1"
-export PROXMOX_TOKEN_ID='root@pam!automation'
-```
-
-```bash
-# mit richtigem secret ersetzen 
+export PROXMOX_TOKEN_ID="root@pam!automation"
 export PROXMOX_TOKEN_SECRET="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
 ```
 
@@ -223,8 +219,8 @@ variable "proxmox_node" {
 }
 
 variable "template_vm_id" {
-  type    = number
-  default = 9000
+  description = "VM-ID des Packer-Templates (900<TLN_NR>)"
+  type        = number
 }
 
 variable "datastore" {
@@ -361,7 +357,7 @@ proxmox_url      = "https://176.9.38.183:8006"
 proxmox_token_id     = "${PROXMOX_TOKEN_ID}"
 proxmox_token_secret = "${PROXMOX_TOKEN_SECRET}"
 proxmox_node     = "pve"
-template_vm_id   = 9000
+template_vm_id   = 900${TLN_NR}
 
 worker_count    = 1
 cp_ip           = "10.10.10.1${TLN_NR}1"
