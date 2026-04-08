@@ -225,7 +225,7 @@ variable "template_vm_id" {
 
 variable "datastore" {
   type    = string
-  default = "local"
+  default = "local-lvm"
 }
 
 variable "worker_count" {
