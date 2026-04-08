@@ -419,7 +419,11 @@ cat > ansible/site.yml <<'EOF'
 
     - name: Warten bis Calico CRDs registriert sind
       become: false
-      command: kubectl wait --for=condition=Established crd/installations.operator.tigera.io --timeout=120s
+      command: kubectl wait --for=condition=Established crd/installations.operator.tigera.io --timeout=30s
+      retries: 10
+      delay: 10
+      register: crd_wait
+      until: crd_wait.rc == 0
 
     - name: Calico Custom Resources installieren
       become: false
@@ -428,9 +432,13 @@ cat > ansible/site.yml <<'EOF'
       changed_when: calico_cr.rc == 0
       failed_when: calico_cr.rc != 0 and 'AlreadyExists' not in calico_cr.stderr
 
-    - name: Warten bis Calico-Pods ready sind
+    - name: Warten bis Calico-Node Pods ready sind
       become: false
-      command: kubectl wait --for=condition=Ready pods --all -n calico-system --timeout=120s
+      shell: kubectl wait --for=condition=Ready pods -l k8s-app=calico-node -n calico-system --timeout=180s
+      retries: 5
+      delay: 15
+      register: calico_wait
+      until: calico_wait.rc == 0
 
     - name: Join-Command erzeugen
       command: kubeadm token create --print-join-command
@@ -459,6 +467,14 @@ cat > ansible/site.yml <<'EOF'
         path: /tmp/kubeconfig
         regexp: 'server: https://.*:6443'
         replace: "server: https://{{ ansible_host }}:6443"
+
+    - name: Lokales .kube Verzeichnis erstellen
+      delegate_to: localhost
+      become: false
+      file:
+        path: "{{ lookup('env', 'HOME') }}/.kube"
+        state: directory
+        mode: '0700'
 
     - name: kubeconfig nach ~/.kube/config kopieren
       delegate_to: localhost
