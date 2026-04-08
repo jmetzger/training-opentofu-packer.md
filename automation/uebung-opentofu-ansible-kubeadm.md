@@ -157,7 +157,7 @@ resource "proxmox_virtual_environment_vm" "worker" {
     datastore_id = var.datastore
     ip_config {
       ipv4 {
-        address = "${cidrhost("${var.worker_base_ip}/24", count.index)}/24"
+        address = "${join(".", slice(split(".", var.worker_base_ip), 0, 3))}.${tonumber(split(".", var.worker_base_ip)[3]) + count.index}/24"
         gateway = var.gateway
       }
     }
@@ -310,7 +310,7 @@ resource "local_file" "ansible_inventory" {
     workers = [
       for i, vm in proxmox_virtual_environment_vm.worker : {
         name = vm.name
-        ip   = cidrhost("${var.worker_base_ip}/24", i)
+        ip   = "${join(".", slice(split(".", var.worker_base_ip), 0, 3))}.${tonumber(split(".", var.worker_base_ip)[3]) + i}"
       }
     ]
     vm_user = var.vm_user
@@ -331,7 +331,7 @@ output "controlplane_ip" {
 output "worker_ips" {
   value = [
     for i in range(var.worker_count) :
-    cidrhost("${var.worker_base_ip}/24", i)
+    "${join(".", slice(split(".", var.worker_base_ip), 0, 3))}.${tonumber(split(".", var.worker_base_ip)[3]) + i}"
   ]
 }
 
