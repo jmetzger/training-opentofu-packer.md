@@ -526,7 +526,12 @@ In der Proxmox-Oberfläche solltet ihr jetzt ein Template sehen:
 - **ID:** 900\<eure-nr\> (z.B. 9001)
 - **Name:** ubuntu-k8s-tln\<eure-nr\>
 
-### Schnelltest: VM aus Template klonen (qls root)
+### Schnelltest: VM aus Template klonen (als root)
+
+```bash
+sudo su -
+```
+
 
 ```bash
 # Klonen
