@@ -11,7 +11,7 @@ tofu apply fertig
 ansible-playbook -i inventory.ini cluster.yml
     ├── Role: kubeadm-init  → kubeadm init auf cp1, register join-command
     ├── Role: kubeadm-join  → join-command auf w1 via hostvars
-    └── Role: cni           → Cilium/Flannel auf cp1 deployen
+    └── Role: cni           → Calico auf cp1 deployen
     ↓
 Cluster ready
 ```
