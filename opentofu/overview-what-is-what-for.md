@@ -9,6 +9,11 @@
 - Lizenz: **MPL-2.0**
 - Verwaltet von der **Linux Foundation**
 
+## Wann kein opentofu verwenden ? (auch für Infrastructure)
+
+  * Es muss für das Ziel (z.B. aws, azure etc.) einen guten Provider entweder von terraform, opentofu oder aus der Community geben
+  * Wenn es keinen guten oder ein nicht gepflegten Provider gibt -> **Finger weg !** -> z.B. HyperV (kein commit seit 2 Jahren)
+
 ## Dafür ist OpenTofu gemacht
 
 | Bereich | Beispiele |
