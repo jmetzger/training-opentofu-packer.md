@@ -1,4 +1,4 @@
-# Training Packer/OpenTofu/Ansible -> Kubernetes
+# Training Packer/OpenTofu/Ansible -> Kubernetes (auf Proxmox)
 
 ## Agenda
 
