@@ -25,7 +25,7 @@
      * [Was ist ansible](ansible/00-overview.md)
      * [ansible installation](ansible/installation.md)    
   
-  1. Kubernetes-Instalation mit Opentofu und Ansible
+  1. Kubernetes-Installation mit Opentofu und Ansible
      * [Kubernetes (kubeadm) - Installation mit opentofu und ansible](automation/uebung-opentofu-ansible-kubeadm.md)  
 
   1. Misc
