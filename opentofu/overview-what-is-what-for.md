@@ -45,7 +45,6 @@
 | **Komplexe Logik / Scripting** | HCL ist deklarativ, keine Programmiersprache | **Python, Go, Bash** |
 | **Kubernetes-Manifeste verwalten** | Geht technisch (K8s-Provider), funktioniert in der Praxis schlecht | **Helm, Kustomize, GitOps** |
 | **Manuelle Änderungen neben OpenTofu** | State Drift → nächster Apply zerstört manuelle Änderungen | Alles durch Code |
-| **Riesige Monolith-States** | Langsam, riskant, Blast Radius zu groß | **Workspaces / State-Splitting** |
 | **Datenbank-Inhalte verwalten** | Keine Migration, kein Schema-Management | **Flyway, Liquibase, Django Migrations** |
 | **Monitoring/Alerting konfigurieren** | Geht (Grafana-Provider etc.), wird aber schnell unhandlich | **Jsonnet, Grafana-as-Code, Ansible** |
 
