@@ -560,6 +560,11 @@ cat /etc/modules-load.d/k8s.conf
 sysctl net.ipv4.ip_forward
 ```
 
+```
+qm stop 20${TLN_NR}
+qm destroy 20${TLN_NR}
+```
+
 ---
 
 ## Was steckt im Template?
