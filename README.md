@@ -22,10 +22,14 @@
      * [OpenTofu bash completion](opentofu/bash-completion.md)
   
   1. ansible
+     * [Was ist ansible](ansible/00-overview.md)
      * [ansible installation](ansible/installation.md)    
   
   1. Kubernetes-Instalation mit Opentofu und Ansible
      * [Kubernetes (kubeadm) - Installation mit opentofu und ansible](automation/uebung-opentofu-ansible-kubeadm.md)  
-  
+
+  1. Misc
+     * [HyperV und opentofu ? Alternativen ?](misc/01-hyperv-opentofu.md)
+     
 
     
