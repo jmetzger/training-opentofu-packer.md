@@ -33,5 +33,6 @@
      * [HyperV und opentofu ? Alternativen ?](misc/01-hyperv-opentofu.md)
      * [IIS deployen mit packer und ansible auf HyperV](misc/02-iis-auf-windows-deployen-in-hyperv.md)
      
-
+  1. Tipps & Tricks
+     * [Änderungen durchführen und mehrere Server rebooten](automation/aenderungen-durchfuehren.md)
     
