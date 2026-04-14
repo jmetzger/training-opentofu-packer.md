@@ -95,10 +95,10 @@ export PROXMOX_TOKEN_SECRET="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
 ## Schritt 3: Projektstruktur anlegen
 
 ```bash
-mkdir -p ~/opentofu-k8s/templates
-mkdir -p ~/opentofu-k8s/inventory
-mkdir -p ~/opentofu-k8s/ansible
-cd ~/opentofu-k8s
+mkdir -p ~/opentofu-k8s-ha/templates
+mkdir -p ~/opentofu-k8s-ha/inventory
+mkdir -p ~/opentofu-k8s-ha/ansible
+cd ~/opentofu-k8s-ha
 ```
 
 ---
