@@ -174,6 +174,73 @@ backend k8s-api
 
 ---
 
+## Hintergrund: HA Control Plane mit kubeadm
+
+Ein HA Control Plane besteht aus 3 Nodes, die jeweils API-Server, Controller-Manager, Scheduler und etcd laufen haben. Das Bootstrapping erfolgt in zwei Phasen:
+
+### Phase 1: Erster Control Plane (kubeadm init)
+
+```bash
+kubeadm init \
+  --control-plane-endpoint "VIP:6443" \
+  --upload-certs \
+  --pod-network-cidr=192.168.0.0/16 \
+  --apiserver-advertise-address=<CP1-IP>
+```
+
+**Was passiert:**
+
+1. kubeadm erstellt alle **Zertifikate** (CA, API-Server, etcd, Front-Proxy, ServiceAccount Keys)
+2. Statische Pod-Manifeste werden unter `/etc/kubernetes/manifests/` angelegt (API-Server, Controller-Manager, Scheduler, etcd)
+3. kubelet startet diese als Static Pods
+4. `--control-plane-endpoint "VIP:6443"` wird in die kubeconfig und ins Cluster geschrieben — alle Nodes verwenden die VIP als API-Endpunkt
+5. `--upload-certs` verschlüsselt die CA-Zertifikate und speichert sie als Secret (`kubeadm-certs`) im Cluster
+
+### Phase 2: Weitere Control Planes (kubeadm join)
+
+```bash
+kubeadm join VIP:6443 \
+  --control-plane \
+  --certificate-key <KEY> \
+  --apiserver-advertise-address=<CPn-IP>
+```
+
+**Was passiert:**
+
+1. Der neue Node kontaktiert die VIP (→ HAProxy → ein gesunder CP)
+2. Mit dem **Certificate-Key** holt er das verschlüsselte `kubeadm-certs` Secret und entschlüsselt es
+3. Daraus erhält er die CA-Zertifikate und generiert seine eigenen API-Server/etcd-Zertifikate
+4. `--control-plane` sagt kubeadm: erstelle API-Server, Controller-Manager, Scheduler und etcd auf diesem Node
+5. Der neue etcd-Node tritt dem bestehenden etcd-Cluster bei (Raft-Konsens)
+6. `--apiserver-advertise-address` setzt die IP, auf der dieser API-Server erreichbar ist
+
+### Certificate-Key Gültigkeit
+
+Der Certificate-Key ist nur **2 Stunden gültig**. Nach Ablauf wird das Secret automatisch gelöscht. Falls man später einen weiteren CP hinzufügen will:
+
+```bash
+# Auf einem bestehenden CP — lädt Zertifikate erneut hoch
+kubeadm init phase upload-certs --upload-certs
+```
+
+### Warum serial: 1 im Playbook?
+
+Die weiteren CPs joinen im Ansible-Playbook mit `serial: 1` — also nacheinander. Grund: Jeder neue Node muss dem etcd-Cluster beitreten. etcd braucht dafür Quorum und eine stabile Cluster-Mitgliedschaft. Paralleles Joinen kann zu Race Conditions führen, bei denen etcd den Überblick über seine Mitglieder verliert.
+
+### etcd Quorum
+
+etcd verwendet den **Raft-Konsensalgorithmus**. Für Lese- und Schreiboperationen braucht es eine Mehrheit (Quorum):
+
+| CPs gesamt | Quorum | Tolerierte Ausfälle |
+|-----------|--------|---------------------|
+| 1 | 1 | 0 |
+| 3 | 2 | 1 |
+| 5 | 3 | 2 |
+
+Bei 3 CPs darf **maximal 1 Node** ausfallen. Fallen 2 aus, ist etcd (und damit der gesamte API-Server) nicht mehr verfügbar — auch nicht für Lesezugriffe, da etcd standardmäßig linearizable Reads verwendet.
+
+---
+
 ## Schritt 1: SSH-Keypair erstellen
 
 ```bash
