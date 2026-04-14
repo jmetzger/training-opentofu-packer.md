@@ -151,7 +151,7 @@ resource "proxmox_virtual_environment_vm" "haproxy" {
   disk {
     datastore_id = var.datastore
     interface    = "scsi0"
-    size         = 20
+    size         = 30
   }
 
   network_device {
@@ -770,8 +770,10 @@ EOF
 ```bash
 tofu init
 tofu plan
-tofu apply -auto-approve
+tofu apply -parallelism=1 -auto-approve
 ```
+
+**Hinweis:** `-parallelism=1` ist nötig, da Proxmox bei parallelen Clones auf denselben Storage ein Lock setzt und der Apply sonst fehlschlägt.
 
 ### Ergebnis prüfen
 
@@ -860,7 +862,7 @@ kubectl get pods -n calico-system
 ## Schritt 13: Aufräumen
 
 ```bash
-tofu destroy
+tofu destroy -parallelism=1
 ```
 
 ---
@@ -874,7 +876,7 @@ set -e
 
 echo "=== Step 1: OpenTofu - VMs erstellen ==="
 tofu init
-tofu apply -auto-approve
+tofu apply -parallelism=1 -auto-approve
 
 echo ""
 echo "=== Warte 30s auf VM-Boot ==="
